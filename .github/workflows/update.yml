@@ -4,6 +4,9 @@ on:
   repository_dispatch:
     types: [update-manifest]
 
+permissions:
+  contents: write
+
 jobs:
   update:
     runs-on: ubuntu-latest
@@ -12,7 +15,10 @@ jobs:
 
       - name: Get version
         id: version
-        run: echo "version=${{ github.event.client_payload.version }}" | sed 's/v//' >> $GITHUB_OUTPUT
+        run: |
+          VERSION="${{ github.event.client_payload.version }}"
+          VERSION="${VERSION#v}"
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
 
       - name: Download and hash asset
         run: |
