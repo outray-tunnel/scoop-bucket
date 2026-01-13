@@ -1,0 +1,57 @@
+name: Update Manifest
+
+on:
+  repository_dispatch:
+    types: [update-manifest]
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Get version
+        id: version
+        run: echo "version=${{ github.event.client_payload.version }}" | sed 's/v//' >> $GITHUB_OUTPUT
+
+      - name: Download and hash asset
+        run: |
+          VERSION=${{ steps.version.outputs.version }}
+          curl -sL "https://github.com/outray-tunnel/outray/releases/download/v${VERSION}/outray-win-x64.zip" -o win-x64.zip
+          echo "SHA_WIN=$(sha256sum win-x64.zip | cut -d' ' -f1)" >> $GITHUB_ENV
+
+      - name: Update manifest
+        run: |
+          VERSION=${{ steps.version.outputs.version }}
+          
+          cat > outray.json << EOF
+          {
+            "version": "${VERSION}",
+            "description": "Expose your local server to the internet",
+            "homepage": "https://github.com/outray-tunnel/outray",
+            "license": "MIT",
+            "architecture": {
+              "64bit": {
+                "url": "https://github.com/outray-tunnel/outray/releases/download/v${VERSION}/outray-win-x64.zip",
+                "hash": "${SHA_WIN}"
+              }
+            },
+            "bin": "outray.exe",
+            "checkver": "github",
+            "autoupdate": {
+              "architecture": {
+                "64bit": {
+                  "url": "https://github.com/outray-tunnel/outray/releases/download/v\$version/outray-win-x64.zip"
+                }
+              }
+            }
+          }
+          EOF
+
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add outray.json
+          git commit -m "Update outray to ${{ steps.version.outputs.version }}"
+          git push
