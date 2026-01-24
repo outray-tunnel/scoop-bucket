@@ -1,12 +1,12 @@
 {
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "Expose your local server to the internet",
   "homepage": "https://github.com/outray-tunnel/outray",
   "license": "MIT",
   "architecture": {
     "64bit": {
-      "url": "https://github.com/outray-tunnel/outray/releases/download/v0.1.5/outray-win-x64.zip",
-      "hash": "55fbac7ff50cf02e72f2f661b1320e025aec6408375f0ed20f1196008406312d"
+      "url": "https://github.com/outray-tunnel/outray/releases/download/v0.1.6/outray-win-x64.zip",
+      "hash": "462f49def3ad2f9faabbd7d63305e8607660d744c175a5f4c08689bf3d1cbfca"
     }
   },
   "bin": "outray.exe",
